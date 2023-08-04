@@ -1,0 +1,1 @@
+a061c2753d2a01c6f2495a44dfefee9b4660753b53f8f03f53536f78bd640a28  /target/wasm32-unknown-unknown/release/ft.wasm
