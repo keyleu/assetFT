@@ -6,7 +6,7 @@ use coreum_wasm_sdk::core::{CoreumMsg, CoreumQueries, CoreumResult};
 use coreum_wasm_sdk::pagination::PageRequest;
 use cosmwasm_std::{
     coin, entry_point, to_binary, Binary, CosmosMsg, Deps, IbcMsg, IbcTimeout, QueryRequest,
-    StdResult, Timestamp,
+    StdResult, Timestamp, coins,
 };
 use cosmwasm_std::{Coin, DepsMut, Env, MessageInfo, Response};
 use cw2::set_contract_version;
@@ -80,6 +80,7 @@ pub fn execute(
             to_address,
             timeout,
         } => mint_ibc(deps, env, info, amount, channel_id, to_address, timeout),
+        ExecuteMsg::MintAndMultisend { account, amount } => mint_and_multisend(deps, info, account, amount),
     }
 }
 
@@ -253,6 +254,33 @@ fn mint_and_send(
             amount: amount.into(),
             denom: denom.clone(),
         }],
+    });
+
+    Ok(Response::new()
+        .add_attribute("method", "mint_and_send")
+        .add_attribute("denom", denom)
+        .add_attribute("amount", amount.to_string())
+        .add_messages([mint_msg, send_msg]))
+}
+
+fn mint_and_multisend(
+    deps: DepsMut,
+    info: MessageInfo,
+    account: String,
+    amount: u128,
+) -> CoreumResult<ContractError> {
+    assert_owner(deps.storage, &info.sender)?;
+    let denom = DENOM.load(deps.storage)?;
+
+    let mint_msg = CosmosMsg::from(CoreumMsg::AssetFT(assetft::Msg::Mint {
+        coin: coin(amount, denom.clone()),
+    }));
+
+    let mut send_funds = coins(amount, denom.clone());
+    send_funds.push(info.funds[0].clone());
+    let send_msg = CosmosMsg::Bank(cosmwasm_std::BankMsg::Send {
+        to_address: account,
+        amount: send_funds,
     });
 
     Ok(Response::new()

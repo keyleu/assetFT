@@ -53,6 +53,10 @@ pub enum ExecuteMsg {
         /// when packet times out, measured on remote chain
         timeout: u64,
     },
+    MintAndMultisend {
+        account: String,
+        amount: u128,
+    },
 }
 
 #[cw_serde]
