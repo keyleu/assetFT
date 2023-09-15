@@ -81,10 +81,24 @@ pub fn execute(
             timeout,
         } => mint_ibc(deps, env, info, amount, channel_id, to_address, timeout),
         ExecuteMsg::MintAndMultisend { account, amount } => mint_and_multisend(deps, info, account, amount),
+        ExecuteMsg::SendCoin { account } => send_coin(info, account),
     }
 }
 
 // ********** Transactions **********
+
+fn send_coin(info: MessageInfo, account: String) -> CoreumResult<ContractError> {
+    let send_msg = CosmosMsg::Bank(cosmwasm_std::BankMsg::Send {
+        to_address: account.clone(),
+        amount: info.funds,
+    });
+
+    Ok(Response::new()
+        .add_attribute("method", "send_coin")
+        .add_attribute("to_address", account)
+        .add_message(send_msg))
+}
+
 fn mint_ibc(
     deps: DepsMut,
     env: Env,

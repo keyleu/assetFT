@@ -57,6 +57,10 @@ pub enum ExecuteMsg {
         account: String,
         amount: u128,
     },
+
+    SendCoin {
+        account: String,
+    }
 }
 
 #[cw_serde]

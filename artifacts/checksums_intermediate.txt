@@ -1,1 +1,1 @@
-694ec11e66914a17a26aa1bbf312cd31411105a5ea8613173c66299bc5e3d29e  /target/wasm32-unknown-unknown/release/ft.wasm
+c95eec2004b34b23f487befd51a94ad726c7bf12b30c4b3e5b88e046b94b7177  /target/wasm32-unknown-unknown/release/ft.wasm
